@@ -39,6 +39,7 @@ message("Torch_DIR:  ${Torch_DIR}")
 include_directories(
   ${THIRD_PARTY}/eigen/
   ${THIRD_PARTY}/gamepad/include
+  ${THIRD_PARTY}/Lite3_MotionSDK/include/common
   ${THIRD_PARTY}/Lite3_MotionSDK/include
   types
   utils
@@ -50,6 +51,7 @@ include_directories(
 )
 
 add_subdirectory(interface)
+
 
 if (BUILD_SIM)
 message("USE_PYBULLET:    ${USE_PYBULLET}")
@@ -75,6 +77,17 @@ file(GLOB_RECURSE RUN_POLICY_SRC "run_policy/*.cpp")
 
 add_executable(rl_deploy main.cpp ${STATE_MACHINE_SRC} ${RUN_POLICY_SRC})
 target_link_libraries(rl_deploy interface -lpthread -lm -lrt -ldl -lstdc++ torch)
+
+link_directories(${THIRD_PARTY}/Lite3_MotionSDK/lib)
+
+target_link_libraries(rl_deploy
+    ${PROJECT_SOURCE_DIR}/third_party/Lite3_MotionSDK/lib/libdeeprobotics_legged_sdk_x86_64.so
+    pthread
+    rt
+)
+
+
+
 
 if (BUILD_SIM)
   if(USE_RAISIM)

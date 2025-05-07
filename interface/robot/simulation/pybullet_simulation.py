@@ -109,18 +109,45 @@ class PyBulletSimulation:
         self.lastBaseVelWorld = baseVelWorld
         baseAccWorld[2, 0] = baseAccWorld[2, 0] + 9.81
         self.baseAcc = rotMat.T@baseAccWorld
+        # # --- 调试打印 ---
+        # print(f"[IMU] RPY: {self.baseRpy.flatten()}")
+        # print(f"[IMU] Omega: {self.baseOmega.flatten()}")
+        # print(f"[IMU] Acc: {self.baseAcc.flatten()}")
+
 
     def getJointMessage(self):
         jointStates = p.getJointStates(self.robot, self.jointIdxList)
         self.jointPos = np.array([jointStates[i][0] for i in range(self.dofNum)]).reshape(self.dofNum, 1)
         self.jointVel = np.array([jointStates[i][1] for i in range(self.dofNum)]).reshape(self.dofNum, 1)
         self.jointTau = np.array([jointStates[i][3] for i in range(self.dofNum)]).reshape(self.dofNum, 1)
+        
+        
+        # # --- 调试打印 ---
+        # print(f"[Joint] Position:\n{self.jointPos.flatten()}")
+        # print(f"[Joint] Velocity:\n{self.jointVel.flatten()}")
+        # print(f"[Joint] Torque:\n{self.jointTau.flatten()}")
+
+
+
 
     def setJointCmd(self, kp, targetPos, kd, targetVel, tau):
         self.inputTorque = np.multiply(kp, (targetPos-self.jointPos)) \
                          + np.multiply(kd, (targetVel-self.jointVel))\
                          + tau
-        
+        # === 调试打印 ===
+        # print("=== [Joint Command Debug] ===")
+        # print(f"[Target Pos]:\n{targetPos.T}")
+        # print(f"[Actual Pos]:\n{self.jointPos.T}")
+
+        # print(f"[Target Vel]:\n{targetVel.T}")
+        # print(f"[Actual Vel]:\n{self.jointVel.T}")
+
+        # print(f"[Kp Term]:\n{kp.T}")
+        # print(f"[Kd Term]:\n{kd.T}")
+        # print(f"[Feedforward Tau]:\n{tau.T}")
+        # print(f"[Final Torque Output]:\n{self.inputTorque.T}")
+
+
 
     def sendRobotData(self):
         timestamp = np.array([self.timestamp]).flatten()
@@ -138,7 +165,7 @@ class PyBulletSimulation:
             try:
                 self.server.sendto(data, self.ctrlAddr)
             except socket.error as ex:
-                print(ex)
+                print(f"[UDP Error] Failed to send: {ex}")
         # self.comm_lock.release()
         
     def receiveJointCmd(self):
@@ -157,8 +184,16 @@ class PyBulletSimulation:
             self.jointPosCmd = np.array(targetPos).reshape(12, 1)
             self.jointVelCmd = np.array(targetVel).reshape(12, 1)
             self.tauCmd = np.array(tau).reshape(12, 1)
+            
+            print(f"[UDP] Received {len(data)} bytes from {addr}")
+            print(f"[Recv] Kp:\n{self.kpCmd.T}")
+            print(f"[Recv] Kd:\n{self.kdCmd.T}")
+            print(f"[Recv] Target Pos:\n{self.jointPosCmd.T}")
+            print(f"[Recv] Target Vel:\n{self.jointVelCmd.T}")
+            print(f"[Recv] Tau:\n{self.tauCmd.T}")
             # print(self.kpCmd)
         udpSocket.close()
+        
 
 
 if __name__ == '__main__':
