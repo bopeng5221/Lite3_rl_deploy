@@ -17,7 +17,7 @@ import time
 import os
 
 urdfPath = {
-"lite3":    "/../../../third_party/URDF_model/lite3_urdf/lite3_pybullet/Lite3/urdf/Lite3.urdf",
+"lite3":    "/../../../Lite3_description/lite3_urdf/lite3_pybullet/Lite3/urdf/Lite3.urdf",
 }
 
 initJointPos = {
@@ -110,11 +110,11 @@ class PyBulletSimulation:
         baseAccWorld[2, 0] = baseAccWorld[2, 0] + 9.81
         self.baseAcc = rotMat.T@baseAccWorld
         # # --- 调试打印 ---
-        print(f"[IMU] Vel_world: {baseVelWorld.flatten()}")
-        print(f"[IMU] Last_Vel_body: {self.lastBaseVelWorld.flatten()}")
+        # print(f"[IMU] Vel_world: {baseVelWorld.flatten()}")
+        # print(f"[IMU] Last_Vel_body: {self.lastBaseVelWorld.flatten()}")
         print(f"[IMU] RPY: {self.baseRpy.flatten()}")
         print(f"[IMU] Omega: {self.baseOmega.flatten()}")
-        print(f"[IMU] Acc_world: {baseAccWorld.flatten()}")
+        # print(f"[IMU] Acc_world: {baseAccWorld.flatten()}")
         print(f"[IMU] Acc_body: {self.baseAcc.flatten()}")
 
 
@@ -138,17 +138,17 @@ class PyBulletSimulation:
                          + np.multiply(kd, (targetVel-self.jointVel))\
                          + tau
         # === 调试打印 ===
-        # print("=== [Joint Command Debug] ===")
-        # print(f"[Target Pos]:\n{targetPos.T}")
-        # print(f"[Actual Pos]:\n{self.jointPos.T}")
+        print("=== [Joint Command Debug] ===")
+        print(f"[Target Pos]:\n{targetPos.T}")
+        print(f"[Actual Pos]:\n{self.jointPos.T}")
 
-        # print(f"[Target Vel]:\n{targetVel.T}")
-        # print(f"[Actual Vel]:\n{self.jointVel.T}")
+        print(f"[Target Vel]:\n{targetVel.T}")
+        print(f"[Actual Vel]:\n{self.jointVel.T}")
 
-        # print(f"[Kp Term]:\n{kp.T}")
-        # print(f"[Kd Term]:\n{kd.T}")
-        # print(f"[Feedforward Tau]:\n{tau.T}")
-        # print(f"[Final Torque Output]:\n{self.inputTorque.T}")
+        print(f"[Kp Term]:\n{kp.T}")
+        print(f"[Kd Term]:\n{kd.T}")
+        print(f"[Feedforward Tau]:\n{tau.T}")
+        print(f"[Final Torque Output]:\n{self.inputTorque.T}")
 
 
 
@@ -160,6 +160,10 @@ class PyBulletSimulation:
         jointPos = self.jointPos.flatten()
         jointVel = self.jointVel.flatten()
         jointTau = self.jointTau.flatten()
+        
+        # 调试
+        print(f"[IMU] jointTau: {jointTau.flatten()}")
+        
         combineData = np.concatenate((timestamp, rpy, acc, omg, jointPos, jointVel, jointTau))
         formatString = f'1d{len(combineData)-1}f'
         data = struct.pack(formatString, *combineData)

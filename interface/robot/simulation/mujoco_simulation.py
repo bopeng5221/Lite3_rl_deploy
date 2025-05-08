@@ -22,7 +22,7 @@ import mujoco.viewer
 
 
 MODEL_NAME = "lite3"                      
-XML_PATH   = "../../../third_party/URDF_model/lite3_mjcf/mjcf/Lite3.xml"           
+XML_PATH   = "../../../Lite3_description/lite3_mjcf/mjcf/Lite3.xml"           
 LOCAL_PORT = 20001                         
 CTRL_IP    = "127.0.0.1"                   
 CTRL_PORT  = 30010
@@ -158,6 +158,17 @@ class MuJoCoSimulation:
             self.kd_cmd * (self.vel_cmd - dq) +
             self.tau_ff
         )
+        # 调试
+        print("=== [Joint Command Debug] ===")
+        print(f"[Target Pos]:\n{self.pos_cmd.T}")
+        print(f"[Actual Pos]:\n{q.T}")
+        print(f"[Target Vel]:\n{self.vel_cmd.T}")
+        print(f"[Actual Vel]:\n{dq.T}")
+        print(f"[Kp Term]:\n{self.kp_cmd.T}")
+        print(f"[Kd Term]:\n{self.kd_cmd.T}")
+        print(f"[Feedforward Tau]:\n{self.tau_ff.T}")
+        print(f"[Final Torque Output]:\n{self.input_tq.T}")
+        
         # 写入 control 缓冲区
         self.data.ctrl[:] = self.input_tq.flatten()
 
@@ -220,14 +231,15 @@ class MuJoCoSimulation:
         R = mat.reshape(3, 3)
         # body_acc  = R.T @ acc_world
         body_acc = self.data.sensordata[0:3]         # body frame
-        body_acc[2] += 9.81                       # z 加速度处理
+        body_acc[2] += 9.81                          # z 加速度处理
         # body_omega= R.T @ angvel
-        angvel = R @ angvel_b                           # world frame
+        angvel = R @ angvel_b                        # world frame
 
         # ----- 关节 -----
         q = self.data.qpos[7:7+self.dof]
         dq= self.data.qvel[6:6+self.dof]
         tau=self.input_tq.flatten()
+        print(f"[IMU] tau: {tau}")
         
         # --- 调试打印 ---
 

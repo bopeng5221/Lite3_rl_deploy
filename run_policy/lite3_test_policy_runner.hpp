@@ -46,8 +46,13 @@ public:
                             -0.0, -1, 1.8,
                             0.0, -1, 1.8,
                             -0.0, -1, 1.8;
-        kp_ = 20.*VecXf::Ones(12);
-        kd_ = 0.7*VecXf::Ones(12);
+        // kp_ = 20.*VecXf::Ones(12);
+        // kd_ = 0.7*VecXf::Ones(12);
+
+        // for mujoco
+        kp_ = 30.*VecXf::Ones(12);
+        kd_ = 0.9 *VecXf::Ones(12);
+
         max_cmd_vel_ << 0.8, 0.3, 0.6;
 
         try { 

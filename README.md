@@ -174,6 +174,11 @@ make -j4
 
 # 键盘操控
 z:进入站立
+
 c:进入RL控制
+
 r:进入joint damping模式
+
 w/a/s/d/q/e : 移动和转动控制
+
+
