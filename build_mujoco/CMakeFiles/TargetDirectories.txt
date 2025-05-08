@@ -1,0 +1,6 @@
+/home/mayuxuan/Lite3_rl_deploy/build_mujoco/CMakeFiles/rebuild_cache.dir
+/home/mayuxuan/Lite3_rl_deploy/build_mujoco/CMakeFiles/edit_cache.dir
+/home/mayuxuan/Lite3_rl_deploy/build_mujoco/CMakeFiles/rl_deploy.dir
+/home/mayuxuan/Lite3_rl_deploy/build_mujoco/interface/CMakeFiles/rebuild_cache.dir
+/home/mayuxuan/Lite3_rl_deploy/build_mujoco/interface/CMakeFiles/edit_cache.dir
+/home/mayuxuan/Lite3_rl_deploy/build_mujoco/interface/CMakeFiles/interface.dir

@@ -197,28 +197,50 @@ class MuJoCoSimulation:
   
 
         linvel    = self.data.qvel[3:6]             # world frame
-        angvel    = self.data.qvel[0:3]             # world frame
+        # angvel    = self.data.qvel[0:3]           # world frame
+        angvel_b  = self.data.qvel[0:3]             # body frame
+        
         # 简单差分加速度
-        acc_world = (linvel - self.last_base_linvel.flatten()) / DT
-        self.last_base_linvel[:] = linvel.reshape(3,1)
+        # print(f"[IMU] vel: {linvel.flatten()}")
+        # print(f"[IMU] last vel: {self.last_base_linvel.flatten()}")
+        
+        # # acc_world = (linvel - self.last_base_linvel.flatten()) / DT
+        # acc_world = (linvel - self.last_base_linvel.flatten()) / DT
+        # self.last_base_linvel[:] = linvel.reshape(3,1)
+        
+        # # z 加速度处理
+        # acc_world[2] += 9.81
+        # print(f"[IMU] Acc_world: {acc_world.flatten()}")
+        
+        
+        
         # 转到 body frame
         mat = np.zeros(9, dtype=np.float64)
         mujoco.mju_quat2Mat(mat, q_world.astype(np.float64))
         R = mat.reshape(3, 3)
-        body_acc  = R.T @ acc_world
-        body_omega= R.T @ angvel
+        # body_acc  = R.T @ acc_world
+        body_acc = self.data.sensordata[0:3]         # body frame
+        body_acc[2] += 9.81                       # z 加速度处理
+        # body_omega= R.T @ angvel
+        angvel = R @ angvel_b                           # world frame
 
         # ----- 关节 -----
         q = self.data.qpos[7:7+self.dof]
         dq= self.data.qvel[6:6+self.dof]
         tau=self.input_tq.flatten()
+        
+        # --- 调试打印 ---
+
+        print(f"[IMU] RPY: {rpy.flatten()}")
+        print(f"[IMU] Omega: {angvel_b.flatten()}")
+        print(f"[IMU] Acc_body: {body_acc.flatten()}")
 
         # 打包并发送
         payload = np.concatenate((
             np.array([self.timestamp], dtype=np.float64),
             np.asarray(rpy,   dtype=np.float32),
             np.asarray(body_acc,  dtype=np.float32),
-            np.asarray(body_omega,dtype=np.float32),
+            np.asarray(angvel_b,dtype=np.float32),
             q.astype(np.float32),
             dq.astype(np.float32),
             tau.astype(np.float32)

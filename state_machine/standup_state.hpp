@@ -81,8 +81,22 @@ public:
     StandUpState(const RobotType& robot_type, const std::string& state_name, 
         std::shared_ptr<ControllerData> data_ptr):StateBase(robot_type, state_name, data_ptr){
             goal_joint_pos_ = Vec3f(0., GetHipYPosByHeight(cp_ptr_->pre_height_), GetKneePosByHeight(cp_ptr_->pre_height_)).replicate(4, 1);
-            kp_ = cp_ptr_->swing_leg_kp_.replicate(4, 1);
-            kd_ = cp_ptr_->swing_leg_kd_.replicate(4, 1);
+            kp_ = VecXf(12);
+            kd_ = VecXf(12);
+            
+            // 顺序：FL, FR, HL, HR
+            kp_ << 100., 100., 100.,   // FL
+                   100., 100., 100.,   // FR
+                   180., 180., 180.,   // HL ← 强化后腿
+                   180., 180., 180.;   // HR
+            
+            kd_ << 2.5, 2.5, 2.5,
+                   2.5, 2.5, 2.5,
+                   3.5, 3.5, 3.5,
+                   3.5, 3.5, 3.5;            
+            
+            // kp_ = cp_ptr_->swing_leg_kp_.replicate(4, 1);
+            // kd_ = cp_ptr_->swing_leg_kd_.replicate(4, 1);
             joint_cmd_ = MatXf::Zero(12, 5);
             joint_cmd_.col(0) = kp_;
             joint_cmd_.col(2) = kd_;

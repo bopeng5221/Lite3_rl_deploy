@@ -110,9 +110,12 @@ class PyBulletSimulation:
         baseAccWorld[2, 0] = baseAccWorld[2, 0] + 9.81
         self.baseAcc = rotMat.T@baseAccWorld
         # # --- 调试打印 ---
-        # print(f"[IMU] RPY: {self.baseRpy.flatten()}")
-        # print(f"[IMU] Omega: {self.baseOmega.flatten()}")
-        # print(f"[IMU] Acc: {self.baseAcc.flatten()}")
+        print(f"[IMU] Vel_world: {baseVelWorld.flatten()}")
+        print(f"[IMU] Last_Vel_body: {self.lastBaseVelWorld.flatten()}")
+        print(f"[IMU] RPY: {self.baseRpy.flatten()}")
+        print(f"[IMU] Omega: {self.baseOmega.flatten()}")
+        print(f"[IMU] Acc_world: {baseAccWorld.flatten()}")
+        print(f"[IMU] Acc_body: {self.baseAcc.flatten()}")
 
 
     def getJointMessage(self):
@@ -185,12 +188,12 @@ class PyBulletSimulation:
             self.jointVelCmd = np.array(targetVel).reshape(12, 1)
             self.tauCmd = np.array(tau).reshape(12, 1)
             
-            print(f"[UDP] Received {len(data)} bytes from {addr}")
-            print(f"[Recv] Kp:\n{self.kpCmd.T}")
-            print(f"[Recv] Kd:\n{self.kdCmd.T}")
-            print(f"[Recv] Target Pos:\n{self.jointPosCmd.T}")
-            print(f"[Recv] Target Vel:\n{self.jointVelCmd.T}")
-            print(f"[Recv] Tau:\n{self.tauCmd.T}")
+            # print(f"[UDP] Received {len(data)} bytes from {addr}")
+            # print(f"[Recv] Kp:\n{self.kpCmd.T}")
+            # print(f"[Recv] Kd:\n{self.kdCmd.T}")
+            # print(f"[Recv] Target Pos:\n{self.jointPosCmd.T}")
+            # print(f"[Recv] Target Vel:\n{self.jointVelCmd.T}")
+            # print(f"[Recv] Tau:\n{self.tauCmd.T}")
             # print(self.kpCmd)
         udpSocket.close()
         
