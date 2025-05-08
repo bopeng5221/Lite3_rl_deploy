@@ -1,6 +1,6 @@
 """
- * @file pybullet_simulation.py
- * @brief simulation in pybullet
+ * @file mujoco_simulation.py
+ * @brief simulation in mujoco
  * @author mayuxuan
  * @version 1.0
  * @date 2025-05-08
