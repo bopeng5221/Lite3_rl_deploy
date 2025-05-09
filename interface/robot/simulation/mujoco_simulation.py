@@ -236,8 +236,11 @@ class MuJoCoSimulation:
         mujoco.mju_quat2Mat(mat, q_world.astype(np.float64))
         R = mat.reshape(3, 3)
         # body_acc  = R.T @ acc_world
-        body_acc = self.data.sensordata[0:3]         # body frame
-        body_acc[2] += 9.81                          # z 加速度处理
+        body_acc = self.data.sensordata[16:19]         # body frame
+        
+        print("sensordata:", self.data.sensordata)
+        
+        # body_acc[2] += 9.81                          # z 加速度处理
         # body_omega= R.T @ angvel
         angvel = R @ angvel_b                        # world frame
 
