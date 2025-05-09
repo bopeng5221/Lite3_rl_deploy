@@ -213,9 +213,9 @@ class MuJoCoSimulation:
         rpy       = self.quaternion_to_euler(q_world)
   
 
-        linvel    = self.data.qvel[3:6]             # world frame
-        # angvel    = self.data.qvel[0:3]           # world frame
-        angvel_b  = self.data.qvel[0:3]             # body frame
+        # linvel    = self.data.qvel[3:6]             # world frame
+
+        angvel_b  = self.data.qvel[3:6]             # body frame
         
         # 简单差分加速度
         # print(f"[IMU] vel: {linvel.flatten()}")
