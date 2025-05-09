@@ -27,7 +27,8 @@ LOCAL_PORT = 20001
 CTRL_IP    = "127.0.0.1"                   
 CTRL_PORT  = 30010
 USE_VIEWER = True                         
-DT         = 0.001                         
+DT         = 0.001
+RENDER_INTERVAL = 10                         
 
 
 URDF_INIT = {
@@ -82,6 +83,11 @@ class MuJoCoSimulation:
         self.viewer = None
         if USE_VIEWER:
             self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
+            
+            # try accelarate randering
+            # self.viewer = mujoco.viewer.launch_transform(self.model, self.data)
+            
+            
             # self.viewer = mujoco_viewer.MujocoViewer(self.model, self.data)
 
     # --------------------------------------------------------
@@ -114,7 +120,7 @@ class MuJoCoSimulation:
             self._send_robot_state(step)
 
             # 可视化
-            if self.viewer:
+            if self.viewer and step % RENDER_INTERVAL == 0:
                 self.viewer.sync()
 
             # 以 1 kHz 尝试节流
