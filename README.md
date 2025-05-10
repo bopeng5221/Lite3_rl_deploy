@@ -172,7 +172,7 @@ make -j4
 <img src="./doc/pybullet_sim.png" alt="a" style="zoom:75%;" />
 
 
-# 键盘操控
+### 键盘操控
 z:进入站立
 
 c:进入RL控制
