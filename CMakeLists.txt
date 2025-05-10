@@ -5,12 +5,17 @@ project(rl_controller)
 set(CMAKE_BUILD_TYPE Release)
 add_definitions(-w) # warning ignore
 add_compile_options(-fPIC)
+
+
 set(BUILD_PLATFORM "x86" CACHE STRING "select build cpu type")
 option(BUILD SIM OFF)
 option(USE_RAISIM OFF)
 set(USE_PYBULLET ON)
 set(USE_RAISIM OFF)
 option(SEND_REMOTE OFF)
+option(USE_ONNX "Use ONNXRuntime" ON)
+
+
 if (BUILD_PLATFORM STREQUAL arm)
   message("this is arm platform")
   set(BUILD_SIM OFF)
@@ -28,14 +33,30 @@ endif()
 message("BUILD_PLATFORM: ${BUILD_PLATFORM}")
 message("BUILD_SIM:      ${BUILD_SIM}")
 message("SEND_REMOTE:    ${SEND_REMOTE}")
+message("USE_ONNX:       ${USE_ONNX}")
 
+# 路径设置
 get_filename_component(WORKSPACE_DIR ./ ABSOLUTE)
 set(THIRD_PARTY ${WORKSPACE_DIR}/third_party)
 
+# torch setting
 set(Torch_DIR "${THIRD_PARTY}/libtorch/${BUILD_PLATFORM}/share/cmake/Torch")
 find_package(Torch REQUIRED)
 message("Torch_DIR:  ${Torch_DIR}")
 
+set(ONNX_RUNTIME_ROOT "${THIRD_PARTY}/onnxruntime/${BUILD_PLATFORM}")
+message("Using ONNXRuntime from: ${ONNX_RUNTIME_ROOT}")
+
+
+# ONNX setting
+if (USE_ONNX)
+  add_definitions(-DUSE_ONNX)
+
+  include_directories(${ONNX_RUNTIME_ROOT}/include)
+  link_directories(${ONNX_RUNTIME_ROOT}/lib)
+endif()
+
+# include directories
 include_directories(
   ${THIRD_PARTY}/eigen/
   ${THIRD_PARTY}/gamepad/include
@@ -48,11 +69,12 @@ include_directories(
   state_machine
   run_policy
   ${TORCH_INCLUDE_DIRS}
+  ${ONNX_RUNTIME_ROOT}/include
 )
 
 add_subdirectory(interface)
 
-
+# simulation
 if (BUILD_SIM)
 message("USE_PYBULLET:    ${USE_PYBULLET}")
 
@@ -76,7 +98,15 @@ file(GLOB_RECURSE STATE_MACHINE_SRC "state_machine/*.c*")
 file(GLOB_RECURSE RUN_POLICY_SRC "run_policy/*.cpp")
 
 add_executable(rl_deploy main.cpp ${STATE_MACHINE_SRC} ${RUN_POLICY_SRC})
-target_link_libraries(rl_deploy interface -lpthread -lm -lrt -ldl -lstdc++ torch)
+
+
+target_link_libraries(rl_deploy interface -lpthread -lm -lrt -ldl -lstdc++)
+if (USE_ONNX)
+  target_link_libraries(rl_deploy onnxruntime)
+else()
+  target_link_libraries(rl_deploy torch)
+endif()
+
 
 link_directories(${THIRD_PARTY}/Lite3_MotionSDK/lib)
 

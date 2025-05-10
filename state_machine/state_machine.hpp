@@ -15,7 +15,13 @@
 #include "idle_state.hpp"
 #include "standup_state.hpp"
 #include "joint_damping_state.hpp"
-#include "rl_control_state.hpp"
+
+#ifdef USE_ONNX
+    #include "rl_control_state_onnx.hpp"
+#else   
+    #include "rl_control_state.hpp"
+#endif
+
 
 #include "skydroid_gamepad_interface.hpp"
 #include "retroid_gamepad_interface.hpp"
@@ -130,7 +136,17 @@ public:
 
         idle_controller_ = std::make_shared<IdleState>(robot_type, "idle_state", data_ptr);
         standup_controller_ = std::make_shared<StandUpState>(robot_type, "standup_state", data_ptr);
-        rl_controller_ = std::make_shared<RLControlState>(robot_type, "rl_control", data_ptr);
+
+        // 测试ONNX，后续需要改成参数控制
+        // rl_controller_ = std::make_shared<RLControlState>(robot_type, "rl_control", data_ptr);
+        #ifdef USE_ONNX
+            rl_controller_ = std::make_shared<RLControlStateONNX>(robot_type, "rl_control", data_ptr);
+        #else
+            rl_controller_ = std::make_shared<RLControlState>(robot_type, "rl_control", data_ptr);
+        #endif
+        
+
+
         joint_damping_controller_ = std::make_shared<JointDampingState>(robot_type, "joint_damping", data_ptr);
 
         current_controller_ = idle_controller_;

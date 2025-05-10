@@ -182,3 +182,53 @@ r:进入joint damping模式
 w/a/s/d/q/e : 移动和转动控制
 
 
+
+
+## 用onnxruntime替代libtorch实现轻量化
+
+### （0）下载onnxruntime
+
+从onnxruntime官网根据引导下载onnxruntime，或者去onnxruntime的github下载.tgz文件
+
+https://github.com/microsoft/onnxruntime/releases
+
+### （1）.pt模型文件生成.onnx文件
+
+可以通过运行policy文件夹中的pt2onnx.py文件将.pt模型转化为.onnx模型。注意观察程序输出对两个模型一致性的比较。
+
+首先配置和验证程序运行环境
+
+```bash
+pip install torch numpy onnx onnxruntime
+
+python3 -c 'import torch, numpy, onnx, onnxruntime; print(" All modules OK")'
+
+```
+
+然后运行程序
+
+```bash
+cd your/path/to/LITE3_RL_DEPOLY/policy/
+
+python pt2onnx.py
+```
+就可以在当前文件夹看到对应的.onnx模型文件了
+
+### （2） 编译选项
+
+项目同时支持libtorch和onnx，在启用ONNX时优先使用ONNX。
+首先确保policy文件夹中有.onnx模型文件
+
+```bash
+mkdir build 
+cd build 
+cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DSEND_REMOTE=OFF -DUSE_ONNX=ON
+make -j4 
+```
+
+如果设置
+
+```bash
+cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DSEND_REMOTE=OFF -DUSE_ONNX=OFF
+```
+则使用libtorch

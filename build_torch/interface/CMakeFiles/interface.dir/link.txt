@@ -1,0 +1,2 @@
+/usr/bin/ar qc libinterface.a  CMakeFiles/interface.dir/__/third_party/gamepad/src/gamepad.cpp.o CMakeFiles/interface.dir/__/third_party/gamepad/src/retroid_gamepad.cpp.o CMakeFiles/interface.dir/__/third_party/gamepad/src/skydroid_gamepad.cpp.o CMakeFiles/interface.dir/__/third_party/gamepad/src/udp_receiver.cpp.o CMakeFiles/interface.dir/__/third_party/Lite3_MotionSDK/src/motionexample.cpp.o
+/usr/bin/ranlib libinterface.a
