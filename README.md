@@ -232,3 +232,29 @@ make -j4
 cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DSEND_REMOTE=OFF -DUSE_ONNX=OFF
 ```
 则使用libtorch
+
+
+## Mujoco Cpp API
+(0) 环境配置
+在mujoco官方网站下载mujoco release的.tgz文件，解压在third_party中
+https://github.com/google-deepmind/mujoco/releases/tag/2.3.7
+
+为了支持mujoco的可视化，安装GLFW
+```bash
+sudo apt update
+sudo apt install libglfw3-dev
+```
+
+（0*）在arm中实现mujoco仿真
+
+CMAKELIST中设置一下SENDREMOTE相关配置
+
+（1）编译运行
+
+```bash
+cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DUSE_MJCPP=ON -DUSE_ONNX=ON
+make -j4
+./rl_deploy
+```
+
+

@@ -32,6 +32,11 @@
 #ifdef USE_PYBULLET
     #include "simulation/pybullet_interface.hpp"
 #endif
+
+#ifdef USE_MJCPP
+    #include "simulation/mujoco_interface.hpp"
+#endif
+
 #include "hardware/lite3_hardware_interface.hpp"
 #include "data_streaming.hpp"
 
@@ -108,16 +113,22 @@ public:
     StateMachine(RobotType robot_type){
         const std::string activation_key = "~/raisim/activation.raisim";
         std::string urdf_path = "";
+        std::string mjcf_path = "";
         // uc_ptr_ = std::make_shared<SkydroidGamepadInterface>(12121);
         // uc_ptr_ = std::make_shared<RetroidGamepadInterface>(12121);
         uc_ptr_ = std::make_shared<KeyboardInterface>();
 
         if(robot_type == RobotType::Lite3){
             urdf_path = GetAbsPath()+"/../third_party/URDF_model/lite3_urdf/Lite3/urdf/Lite3.urdf";
+            mjcf_path = GetAbsPath()+"/../Lite3_description/lite3_mjcf/mjcf/Lite3.xml";
             #ifdef USE_RAISIM
                 ri_ptr_ = std::make_shared<JueyingRaisimSimulation>(activation_key, urdf_path, "Lite3_sim");
-            #endif
-            #ifdef USE_PYBULLET
+
+            #elif defined(USE_MJCPP)
+                ri_ptr_ = std::make_shared<MujocoInterface>("Lite3", mjcf_path);
+                std::cout << "Using MujocoInterface CPP " << std::endl;
+                std::cout << "mjcf_path: " << mjcf_path << std::endl;
+            #elif defined(USE_PYBULLET)
                 ri_ptr_ = std::make_shared<PybulletInterface>("Lite3");
             #else
                 ri_ptr_ = std::make_shared<Lite3HardwareInterface>("Lite3");
@@ -157,6 +168,7 @@ public:
         std::this_thread::sleep_for(std::chrono::seconds(3)); //for safety 
 
         ri_ptr_->Start();
+        std::cout << "Robot interface started" << std::endl;
         uc_ptr_->Start();
         
         current_controller_->OnEnter();  
@@ -183,6 +195,7 @@ public:
                 }
                 ++cnt;
                 this->GetDataStreaming();
+                std::cout << "GotdataStreaming" << std::endl;
             }
             std::this_thread::sleep_for(std::chrono::microseconds(500));
         }

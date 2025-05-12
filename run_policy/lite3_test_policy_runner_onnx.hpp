@@ -9,7 +9,7 @@
  * 
  */
 
-#ifdef USE_ONNX
+
 
 #ifndef LITE3_TEST_POLICY_RUNNER_ONNX_HPP_
 #define LITE3_TEST_POLICY_RUNNER_ONNX_HPP_
@@ -177,8 +177,8 @@ public:
         // --------------------------------
         action_ = 0.25 * act.col(0);
 
-        std::cout << "[ONNX DEBUG] action (first 3 dims): "
-                  << action_(0) << ", " << action_(1) << ", " << action_(2) << std::endl;
+        // std::cout << "[ONNX DEBUG] action (first 3 dims): "
+        //           << action_(0) << ", " << action_(1) << ", " << action_(2) << std::endl;
 
         last_action1_ = last_action0_;
         last_action0_ = action_;
@@ -196,4 +196,3 @@ public:
 };
 
 #endif  // LITE3_TEST_POLICY_RUNNER_ONNX_HPP_
-#endif  // USE_ONNX

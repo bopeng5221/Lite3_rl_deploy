@@ -121,7 +121,7 @@ public:
     }
     virtual StateName GetNextStateName() {
         if(!joint_normal_flag_ || !imu_normal_flag_) {
-            std::cout << "joint status: " << joint_normal_flag_ << " | imu status: " << imu_normal_flag_ << std::endl;
+            // std::cout << "joint status: " << joint_normal_flag_ << " | imu status: " << imu_normal_flag_ << std::endl;
             return StateName::kIdle;
         }
         if(first_enter_flag_ && ri_ptr_->GetInterfaceTimeStamp() - enter_state_time_ < 2.){
