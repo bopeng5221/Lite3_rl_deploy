@@ -101,11 +101,12 @@ public:
 
         std::cout << "[MuJoCoInterface] Model loaded successfully. DOF: " << model_->nu << std::endl;
 
-        camera_.type = mjCAMERA_FREE;
-        camera_.lookat[0] = 0.0;
-        camera_.lookat[1] = 0.0;
-        camera_.lookat[2] = 1.0;
-        camera_.distance = 3.0;
+        camera_.type = mjCAMERA_TRACKING;
+        camera_.trackbodyid = mj_name2id(model_, mjOBJ_BODY, "TORSO");  // “base”为MJCF中主体名
+        // camera_.lookat[0] = 0.0;
+        // camera_.lookat[1] = 0.0;
+        // camera_.lookat[2] = 1.0;
+        camera_.distance = 4.0;
         camera_.azimuth = 90.0;
         camera_.elevation = -30.0;
     }
@@ -158,7 +159,7 @@ private:
 
 
         // 可视化初始化
-        mjv_defaultCamera(&camera_);
+        // mjv_defaultCamera(&camera_);
         mjv_defaultOption(&opt_);
         mjv_defaultScene(&scene_);
         mjr_defaultContext(&context_);
