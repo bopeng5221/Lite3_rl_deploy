@@ -11,6 +11,31 @@ cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=off -DSEND_REMOTE=OFF
 make -j4
 ```
 
+## 模型转换
+
+运行RL训练出的策略文件需要链接onnxruntime库，而onnxruntime支持的模型为.onnx格式，需要手动转换.pt模型为.onnx格式。
+
+可以通过运行policy文件夹中的pt2onnx.py文件将.pt模型转化为.onnx模型。注意观察程序输出对两个模型一致性的比较。
+
+首先配置和验证程序运行环境
+
+```bash
+pip install torch numpy onnx onnxruntime
+
+python3 -c 'import torch, numpy, onnx, onnxruntime; print(" All modules OK")'
+
+```
+
+然后运行程序
+
+```bash
+cd your/path/to/LITE3_RL_DEPOLY/policy/
+
+python pt2onnx.py
+```
+就可以在当前文件夹看到对应的.onnx模型文件了
+
+
 ### 注意事项：
 
 1.Lite3上的运动主板是arm架构，如果编译在狗上运行需要安装交叉编译工具
@@ -19,14 +44,11 @@ make -j4
 sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 ```
 
-2.运行RL训练出的策略文件需要链接libtorch库，需要根据运行主机的架构和配置自行前往官网(https://pytorch.org/) 下载或编译，因为libtorch程序比较大，不在远程仓库中直接添加。如果有需要arm架构基于CPU(Lite3运动主机架构)的libtorch库，可以在issues中留言。
+2.目前示例给出的远程遥控是按照手柄输入来的，建议提前根据[gamepad](https://github.com/DeepRoboticsLab/gamepad.git) 中的介绍提前测试一下手柄的通讯是否正常。
 
-<img src="./doc/libtorch.png" alt="a" style="zoom:75%;" />
+3.示例程序中给出了基于pybullet平台的仿真验证程序，有兴趣的同学可以前往https://pybullet.org/wordpress/ 了解细节。
 
-3.目前示例给出的远程遥控是按照手柄输入来的，建议提前根据[gamepad](https://github.com/DeepRoboticsLab/gamepad.git) 中的介绍提前测试一下手柄的通讯是否正常。
-
-4.示例程序中给出了基于pybullet平台的仿真验证程序，有兴趣的同学可以前往https://pybullet.org/wordpress/ 了解细节。
-
+4. 项目默认使用ONNX，如果需要使用libtorch，需要手动调整CMakeList设置。
 
 
 ## 各模块介绍
@@ -147,7 +169,10 @@ make -j4
 
 ## 仿真验证
 
-程序还可以用其他仿真平台验证运动程序是否能正常运行，可以用pybullet(Raisim)验证。pybullet仿真与C++运动程序是通过UDP实现实时通讯。为实现仿真验证，需要安装相应的python以及仿真环境。
+程序还可以用其他仿真平台验证运动程序是否能正常运行，可以用pybullet(Raisim)和Mujoco验证。
+
+## pybullet实现仿真验证
+pybullet仿真与C++运动程序是通过UDP实现实时通讯。为实现仿真验证，需要安装相应的python以及仿真环境。
 
 1.确保本机安装python和pybullet(通过pip install pybullet安装即可)，确保pybullet可以正常import和打开。
 
@@ -172,70 +197,32 @@ make -j4
 <img src="./doc/pybullet_sim.png" alt="a" style="zoom:75%;" />
 
 
-### 键盘操控
-z:进入站立
+## 在mujoco实现仿真验证
 
-c:进入RL控制
+本项目支持mujoco进行sim2sim的验证，同时支持纯c++和调用python接口两种形式
 
-r:进入joint damping模式
-
-w/a/s/d/q/e : 移动和转动控制
-
-
-
-
-## 用onnxruntime替代libtorch实现轻量化
-
-### （0）下载onnxruntime
-
-从onnxruntime官网根据引导下载onnxruntime，或者去onnxruntime的github下载.tgz文件
-
-https://github.com/microsoft/onnxruntime/releases
-
-### （1）.pt模型文件生成.onnx文件
-
-可以通过运行policy文件夹中的pt2onnx.py文件将.pt模型转化为.onnx模型。注意观察程序输出对两个模型一致性的比较。
-
-首先配置和验证程序运行环境
-
-```bash
-pip install torch numpy onnx onnxruntime
-
-python3 -c 'import torch, numpy, onnx, onnxruntime; print(" All modules OK")'
-
-```
-
-然后运行程序
-
-```bash
-cd your/path/to/LITE3_RL_DEPOLY/policy/
-
-python pt2onnx.py
-```
-就可以在当前文件夹看到对应的.onnx模型文件了
-
-### （2） 编译选项
-
-项目同时支持libtorch和onnx，在启用ONNX时优先使用ONNX。
-首先确保policy文件夹中有.onnx模型文件
-
+### python接口方式
+通过python程序单独开启一个仿真器的进程，与控制器通过UDP进行数据传输。
+**此模式下c++控制器端仍采用pybullet interface的c++接口（ri_ptr_ = std::make_shared<PybulletInterface>("Lite3");)，后续进一步开发可以单独新建mujoco的cpp接口完成通信
+此时编译并运行控制器
 ```bash
 mkdir build 
 cd build 
-cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DSEND_REMOTE=OFF -DUSE_ONNX=ON
+cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DSEND_REMOTE=OFF 
 make -j4 
+./rl_deploy
 ```
-
-如果设置
-
+然后运行仿真器
 ```bash
-cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DSEND_REMOTE=OFF -DUSE_ONNX=OFF
+cd interface/robot/simulation
+python3 mujoco_simulation.py
 ```
-则使用libtorch
 
+### cpp接口方式
+纯c++实现，避免了python的引入可能造成的版本问题，并且不通过UDP通信而直接在内存层面实现数据传输。
+但由于mujoco的cpp接口不支持直接完成渲染，所以使用OpenGL单独完成渲染
 
-## Mujoco Cpp API
-(0) 环境配置
+(1) 环境配置
 在mujoco官方网站下载mujoco release的.tgz文件，解压在third_party中
 https://github.com/google-deepmind/mujoco/releases/tag/2.3.7
 
@@ -245,16 +232,19 @@ sudo apt update
 sudo apt install libglfw3-dev
 ```
 
-（0*）在arm中实现mujoco仿真
+（***）在arm中实现mujoco仿真
 
 CMAKELIST中设置一下SENDREMOTE相关配置
 
-（1）编译运行
+（2）编译运行
 
 ```bash
-cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DUSE_MJCPP=ON -DUSE_ONNX=ON -DUSE_PYBULLET=OFF
+cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=ON -DUSE_MJCPP=ON
 make -j4
 ./rl_deploy
 ```
+
+
+
 
 
