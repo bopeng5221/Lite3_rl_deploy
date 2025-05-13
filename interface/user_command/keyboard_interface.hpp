@@ -19,7 +19,7 @@ private:
     // MotionStateFeedback msfb_;
     bool start_thread_flag_;
     std::thread kb_thread_;
-    std::mutex mtx_;  //  保护 usr_cmd_ 和 msfb_
+    // std::mutex mtx_;  //  保护 usr_cmd_ 和 msfb_
     
     void ClipNumber(float &num, float low, float up){
         if(low > up) std::cerr << "error clip" << std::endl;
@@ -53,12 +53,12 @@ public:
         start_thread_flag_ = false;
     }
     virtual UserCommand GetUserCommand() override {
-        std::lock_guard<std::mutex> lock(mtx_);
+        // std::lock_guard<std::mutex> lock(mtx_);
         return usr_cmd_;
     }
 
     virtual void SetMotionStateFeedback(const MotionStateFeedback& msfb){
-        std::lock_guard<std::mutex> lock(mtx_);
+        // std::lock_guard<std::mutex> lock(mtx_);
         msfb_ = msfb;
     }
 
@@ -80,7 +80,7 @@ public:
             std::cout << "[Keyboard] Running..." << std::endl;
             if(read(STDIN_FILENO, &input, 1) != -1){
                 double current_time = GetCurrentTimeStamp();
-                std::lock_guard<std::mutex> lock(mtx_);  // 修改 usr_cmd_ 和读取 msfb_
+                // std::lock_guard<std::mutex> lock(mtx_);  // 修改 usr_cmd_ 和读取 msfb_
 
                 std::cout << "input: " << input << std::endl;
                 if(input == 'r'){
