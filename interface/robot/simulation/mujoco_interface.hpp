@@ -20,6 +20,10 @@
 #include <cstring>
 #include <random>
 
+
+#include <atomic>
+#include <mutex>
+
 namespace interface {
 
 class MujocoInterface : public RobotInterface {
@@ -45,6 +49,8 @@ private:
     double run_time_ = 0.0;
     int run_cnt_ = 0;
     VecXd tau_ff_;
+
+    int render_interval_ = 10;
 
     std::default_random_engine dre_;
     std::normal_distribution<> gyro_nd_{0, 0.0001}, rpy_nd_{0, 0.005}, acc_nd_{0, 0.0};
@@ -72,26 +78,26 @@ public:
         data_ = mj_makeData(model_);
 
         // 可视化初始化
-        // mjv_defaultCamera(&camera_);
-        // mjv_defaultOption(&opt_);
-        // mjv_defaultScene(&scene_);
-        // mjr_defaultContext(&context_);
+        mjv_defaultCamera(&camera_);
+        mjv_defaultOption(&opt_);
+        mjv_defaultScene(&scene_);
+        mjr_defaultContext(&context_);
 
-        // if (!glfwInit()) {
-        //     std::cerr << "[ERROR] Could not initialize GLFW" << std::endl;
-        //     exit(1);
-        // }
+        if (!glfwInit()) {
+            std::cerr << "[ERROR] Could not initialize GLFW" << std::endl;
+            exit(1);
+        }
 
-        // window_ = glfwCreateWindow(1200, 900, "MuJoCo Simulation", NULL, NULL);
-        // if (!window_) {
-        //     std::cerr << "[ERROR] Could not create GLFW window" << std::endl;
-        //     glfwTerminate();
-        //     exit(1);
-        // }
+        window_ = glfwCreateWindow(1200, 900, "MuJoCo Simulation", NULL, NULL);
+        if (!window_) {
+            std::cerr << "[ERROR] Could not create GLFW window" << std::endl;
+            glfwTerminate();
+            exit(1);
+        }
 
-        // glfwMakeContextCurrent(window_);
-        // mjv_makeScene(model_, &scene_, 2000);
-        // mjr_makeContext(model_, &context_, mjFONTSCALE_150);
+        glfwMakeContextCurrent(window_);
+        mjv_makeScene(model_, &scene_, 2000);
+        mjr_makeContext(model_, &context_, mjFONTSCALE_150);
 
         std::cout << "[MuJoCoInterface] Model loaded successfully. DOF: " << model_->nu << std::endl;
 
@@ -173,7 +179,7 @@ private:
         mjv_makeScene(model_, &scene_, 2000);
         mjr_makeContext(model_, &context_, mjFONTSCALE_150);
 
-        // glfwMakeContextCurrent(window_);
+        glfwMakeContextCurrent(window_);
 
         glfwSwapInterval(1);
 
@@ -181,7 +187,7 @@ private:
         
         
         
-        while (start_flag_ && !glfwWindowShouldClose(window_)) {
+        while (start_flag_ && !glfwWindowShouldClose(window_))  {
             run_time_ = run_cnt_ * dt_;
 
             UpdateImu();
@@ -189,7 +195,10 @@ private:
             ApplyControl();
 
             mj_step(model_, data_);
-            Render();
+
+            if (run_cnt_ % render_interval_ == 0) {
+                Render();
+            }        
             // std::cout << "Rendered frame " << run_cnt_ << std::endl;
 
             ++run_cnt_;
@@ -208,13 +217,14 @@ private:
 
         rpy_ << roll + rpy_nd_(dre_), pitch + rpy_nd_(dre_), yaw + rpy_nd_(dre_);
 
-        acc_ = Vec3d::Zero();
+        acc_ = Eigen::Map<Vec3d>(data_->sensordata + 16);
 
         omega_body_ = Eigen::Map<Vec3d>(data_->qvel + 3) + Vec3d(gyro_nd_(dre_), gyro_nd_(dre_), gyro_nd_(dre_));
 
         // std::cout << "[IMU] RPY: " << rpy_.transpose()
         //       << " | Omega: " << omega_body_.transpose()
         //       << " | Acc: " << acc_.transpose() << std::endl;
+        
         
     }
 

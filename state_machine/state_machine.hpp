@@ -182,9 +182,10 @@ public:
             if(ri_ptr_->GetInterfaceTimeStamp()!= time_record){
                 time_record = ri_ptr_->GetInterfaceTimeStamp();
                 current_controller_ -> Run();
+                
                 if(current_controller_->LoseControlJudge()) next_state_name_ = StateName::kJointDamping;
                 else next_state_name_ = current_controller_ -> GetNextStateName();
-                // std::cout << current_controller_ -> state_name_ << std::endl;    
+                std::cout << "current state:"<<current_controller_ -> state_name_ << std::endl;    
                 if(next_state_name_ != current_state_name_){
                     current_controller_ -> OnExit();
                     std::cout << current_controller_ -> state_name_ << " ------------> ";
@@ -195,7 +196,6 @@ public:
                 }
                 ++cnt;
                 this->GetDataStreaming();
-                std::cout << "GotdataStreaming" << std::endl;
             }
             std::this_thread::sleep_for(std::chrono::microseconds(500));
         }
