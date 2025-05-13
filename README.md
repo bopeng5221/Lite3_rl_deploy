@@ -202,8 +202,10 @@ make -j4
 本项目支持mujoco进行sim2sim的验证，同时支持纯c++和调用python接口两种形式
 
 ### python接口方式
-通过python程序单独开启一个仿真器的进程，与控制器通过UDP进行数据传输。
-**此模式下c++控制器端仍采用pybullet interface的c++接口（ri_ptr_ = std::make_shared<PybulletInterface>("Lite3");)，后续进一步开发可以单独新建mujoco的cpp接口完成通信
+通过 Python 脚本单独启动一个 MuJoCo 仿真器进程，并通过 UDP 协议与 C++ 控制器进行数据交互。
+
+**此模式下c++控制器端仍采用pybullet interface的c++接口（ri_ptr_ = std::make_shared<PybulletInterface>("Lite3");)，后续可扩展为独立的 MujocoUDPInterface 以明确区分模拟后端
+
 此时编译并运行控制器
 ```bash
 mkdir build 
@@ -219,8 +221,10 @@ python3 mujoco_simulation.py
 ```
 
 ### cpp接口方式
-纯c++实现，避免了python的引入可能造成的版本问题，并且不通过UDP通信而直接在内存层面实现数据传输。
-但由于mujoco的cpp接口不支持直接完成渲染，所以使用OpenGL单独完成渲染
+采用纯 C++ 实现的 MujocoInterface，在同一进程中直接调用 MuJoCo 的 C API，实现控制器与仿真器的深度耦合。避免 Python 引入的版本依赖与运行开销，提升性能。
+
+由于mujoco的cpp接口不支持直接完成渲染，所以使用 GLFW + OpenGL 手动管理图形上下文，弥补 MuJoCo C 接口在可视化方面的不足。
+
 
 (1) 环境配置
 在mujoco官方网站下载mujoco release的.tgz文件，解压在third_party中
