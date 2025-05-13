@@ -78,26 +78,26 @@ public:
         data_ = mj_makeData(model_);
 
         // 可视化初始化
-        mjv_defaultCamera(&camera_);
-        mjv_defaultOption(&opt_);
-        mjv_defaultScene(&scene_);
-        mjr_defaultContext(&context_);
+        // mjv_defaultCamera(&camera_);
+        // mjv_defaultOption(&opt_);
+        // mjv_defaultScene(&scene_);
+        // mjr_defaultContext(&context_);
 
-        if (!glfwInit()) {
-            std::cerr << "[ERROR] Could not initialize GLFW" << std::endl;
-            exit(1);
-        }
+        // if (!glfwInit()) {
+        //     std::cerr << "[ERROR] Could not initialize GLFW" << std::endl;
+        //     exit(1);
+        // }
 
-        window_ = glfwCreateWindow(1200, 900, "MuJoCo Simulation", NULL, NULL);
-        if (!window_) {
-            std::cerr << "[ERROR] Could not create GLFW window" << std::endl;
-            glfwTerminate();
-            exit(1);
-        }
+        // window_ = glfwCreateWindow(1200, 900, "MuJoCo Simulation", NULL, NULL);
+        // if (!window_) {
+        //     std::cerr << "[ERROR] Could not create GLFW window" << std::endl;
+        //     glfwTerminate();
+        //     exit(1);
+        // }
 
-        glfwMakeContextCurrent(window_);
-        mjv_makeScene(model_, &scene_, 2000);
-        mjr_makeContext(model_, &context_, mjFONTSCALE_150);
+        // glfwMakeContextCurrent(window_);
+        // mjv_makeScene(model_, &scene_, 2000);
+        // mjr_makeContext(model_, &context_, mjFONTSCALE_150);
 
         std::cout << "[MuJoCoInterface] Model loaded successfully. DOF: " << model_->nu << std::endl;
 
