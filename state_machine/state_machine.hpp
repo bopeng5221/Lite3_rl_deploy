@@ -23,8 +23,8 @@
 #endif
 
 
-#include "skydroid_gamepad_interface.hpp"
-#include "retroid_gamepad_interface.hpp"
+// #include "skydroid_gamepad_interface.hpp"
+// #include "retroid_gamepad_interface.hpp"
 #include "keyboard_interface.hpp"
 #ifdef USE_RAISIM
     #include "simulation/jueying_raisim_simulation.hpp"

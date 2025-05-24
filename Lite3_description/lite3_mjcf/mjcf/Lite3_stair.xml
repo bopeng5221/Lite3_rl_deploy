@@ -1,0 +1,4 @@
+<mujoco model="Lite3_stair">
+  <include file="/home/ysc/myx/Lite3_rl_deploy/Lite3_description/lite3_mjcf/mjcf/stair.xml"/>
+  <include file="/home/ysc/myx/Lite3_rl_deploy/Lite3_description/lite3_mjcf/mjcf/Lite3.xml"/>
+</mujoco>

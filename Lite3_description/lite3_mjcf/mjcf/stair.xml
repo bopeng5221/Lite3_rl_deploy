@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mujoco model="stair_terrain">
+  <option gravity="0 0 -9.81" />
+
+  <worldbody>
+    <!-- 地面 -->
+    <geom name="floor" type="plane" pos="0 0 0" size="15 15 0.1" rgba="0.8 0.9 0.8 1"/>
+
+    <!-- 台阶（5层） -->
+    <body name="staircase" pos="0.5 0 0">
+      <geom name="stair1" type="box" pos="0.5 0 0.025" size="0.25 3.0 0.025" rgba="0.5 0.5 0.5 1"/>
+      <geom name="stair2" type="box" pos="1.0 0 0.075" size="0.25 3.0 0.025" rgba="0.5 0.5 0.5 1"/>
+      <geom name="stair3" type="box" pos="1.5 0 0.125" size="0.25 3.0 0.025" rgba="0.5 0.5 0.5 1"/>
+      <geom name="stair4" type="box" pos="2.0 0 0.175" size="0.25 3.0 0.025" rgba="0.5 0.5 0.5 1"/>
+      <geom name="stair5" type="box" pos="2.5 0 0.225" size="0.25 3.0 0.025" rgba="0.5 0.5 0.5 1"/>
+      <geom name="stair6" type="box" pos="5.25 0 0.275" size="2.5 3.0 0.025" rgba="0.5 0.5 0.5 1"/>
+    </body>
+  </worldbody>
+</mujoco>

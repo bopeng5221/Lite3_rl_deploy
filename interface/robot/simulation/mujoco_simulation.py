@@ -22,7 +22,7 @@ import mujoco.viewer
 
 
 MODEL_NAME = "lite3"                      
-XML_PATH   = "../../../Lite3_description/lite3_mjcf/mjcf/Lite3_test.xml"           
+XML_PATH   = "../../../Lite3_description/lite3_mjcf/mjcf/Lite3_stair.xml"           
 LOCAL_PORT = 20001                         
 CTRL_IP    = "127.0.0.1"                   
 CTRL_PORT  = 30010
@@ -89,6 +89,7 @@ class MuJoCoSimulation:
             
             
             # self.viewer = mujoco_viewer.MujocoViewer(self.model, self.data)
+        
 
     # --------------------------------------------------------
 
@@ -143,6 +144,10 @@ class MuJoCoSimulation:
             if len(data) < expected:
                 print(f"[WARN] UDP packet size {len(data)} != {expected}")
                 continue
+
+            # 关节命令平滑
+            
+            
             unpacked = struct.unpack(fmt, data)
             self.kp_cmd   = np.asarray(unpacked[0:12],  dtype=np.float32).reshape(-1,1)
             self.pos_cmd  = np.asarray(unpacked[12:24], dtype=np.float32).reshape(-1,1)
@@ -150,6 +155,8 @@ class MuJoCoSimulation:
             self.vel_cmd  = np.asarray(unpacked[36:48], dtype=np.float32).reshape(-1,1)
             self.tau_ff   = np.asarray(unpacked[48:60], dtype=np.float32).reshape(-1,1)
             # print(f"[UDP] cmd from {addr}")
+
+
 
     # --------------------------------------------------------
 
@@ -159,21 +166,23 @@ class MuJoCoSimulation:
         dq  = self.data.qvel[6:6+self.dof].reshape(-1,1)
 
         # τ = kp*(q_d - q) + kd*(dq_d - dq) + τ_ff
+
+
         self.input_tq = (
             self.kp_cmd * (self.pos_cmd - q) +
             self.kd_cmd * (self.vel_cmd - dq) +
             self.tau_ff
         )
         # 调试
-        print("=== [Joint Command Debug] ===")
-        print(f"[Target Pos]:\n{self.pos_cmd.T}")
-        print(f"[Actual Pos]:\n{q.T}")
-        print(f"[Target Vel]:\n{self.vel_cmd.T}")
-        print(f"[Actual Vel]:\n{dq.T}")
-        print(f"[Kp Term]:\n{self.kp_cmd.T}")
-        print(f"[Kd Term]:\n{self.kd_cmd.T}")
-        print(f"[Feedforward Tau]:\n{self.tau_ff.T}")
-        print(f"[Final Torque Output]:\n{self.input_tq.T}")
+        # print("=== [Joint Command Debug] ===")
+        # print(f"[Target Pos]:\n{self.pos_cmd.T}")
+        # print(f"[Actual Pos]:\n{q.T}")
+        # print(f"[Target Vel]:\n{self.vel_cmd.T}")
+        # print(f"[Actual Vel]:\n{dq.T}")
+        # print(f"[Kp Term]:\n{self.kp_cmd.T}")
+        # print(f"[Kd Term]:\n{self.kd_cmd.T}")
+        # print(f"[Feedforward Tau]:\n{self.tau_ff.T}")
+        # print(f"[Final Torque Output]:\n{self.input_tq.T}")
         
         # 写入 control 缓冲区
         self.data.ctrl[:] = self.input_tq.flatten()
@@ -238,7 +247,7 @@ class MuJoCoSimulation:
         # body_acc  = R.T @ acc_world
         body_acc = self.data.sensordata[16:19]         # body frame
         
-        print("sensordata:", self.data.sensordata)
+        # print("sensordata:", self.data.sensordata)
         
         # body_acc[2] += 9.81                          # z 加速度处理
         # body_omega= R.T @ angvel
@@ -248,13 +257,13 @@ class MuJoCoSimulation:
         q = self.data.qpos[7:7+self.dof]
         dq= self.data.qvel[6:6+self.dof]
         tau=self.input_tq.flatten()
-        print(f"[IMU] tau: {tau}")
+        # print(f"[IMU] tau: {tau}")
         
-        # --- 调试打印 ---
+        # # --- 调试打印 ---
 
-        print(f"[IMU] RPY: {rpy.flatten()}")
-        print(f"[IMU] Omega: {angvel_b.flatten()}")
-        print(f"[IMU] Acc_body: {body_acc.flatten()}")
+        # print(f"[IMU] RPY: {rpy.flatten()}")
+        # print(f"[IMU] Omega: {angvel_b.flatten()}")
+        # print(f"[IMU] Acc_body: {body_acc.flatten()}")
 
         # 打包并发送
         payload = np.concatenate((

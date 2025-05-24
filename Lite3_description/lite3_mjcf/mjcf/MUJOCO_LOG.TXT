@@ -1,0 +1,6 @@
+Tue May 20 09:54:09 2025
+WARNING: mju_openResource: unknown file 'lite3.xml'
+
+Tue May 20 09:55:46 2025
+WARNING: mju_openResource: unknown file './lite3.xml'
+

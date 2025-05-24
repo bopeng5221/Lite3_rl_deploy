@@ -7,7 +7,7 @@
 #include <functional>
 #include <termios.h>
 
-#define AXIS_STEP 0.1
+#define AXIS_STEP 0.05
 
 using namespace interface;
 using namespace types;
