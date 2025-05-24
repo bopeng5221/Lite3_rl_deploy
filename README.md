@@ -119,7 +119,7 @@ sudo apt-get install expect
 
 4.在本机执行rl_deploy/scripts目录下的scp_torch_to_remote.sh脚本，注意修改脚本中定义的ip和用户名 
 
-5.ssh [ysc@192.168.1.120](mailto:ysc@192.168.1.120)连进狗的运动主机。修改Lite3运动主机中的`~/jy_exe/conf/network.toml`，将ip项修改为运动主机本地的ip[127.0.0.1](http://127.0.0.1)或者其他本地ip，然后重新执行`sudo ~/jy_exe/restart.sh`脚本重启运动程序。 
+5.ssh [ysc@192.168.2.1](mailto:ysc@192.168.2.1)连进狗的运动主机。修改Lite3运动主机中的`~/jy_exe/conf/network.toml`，将ip项修改为运动主机本地的ip[127.0.0.1](http://127.0.0.1)或者其他本地ip，然后重新执行`sudo ~/jy_exe/restart.sh`脚本重启运动程序。 
 
 6.进入本地的`rl_deploy`文件夹，执行编译执行流程。
 
@@ -132,6 +132,9 @@ sudo apt-get install expect
 
 7.直接执行`./rl_deploy`。观察程序能否正常运行，解决具体问题。实现键盘控制或者手柄控制。
 
+** MotionSDK 的arm 版本so文件没有传到狗里面，rl_deploy lib找不到。
+
+spawn scp -r ${script_path}/../third_party/onnxruntime/$onnx_version/lib  $username@$ip:/home/$username/rl_deploy/lib/onnxruntime/$onnx_version/lib 压根没往里面传。进去单独找一个SDK .so用。
 
 
 ### 2.Lite3运动主机部署
