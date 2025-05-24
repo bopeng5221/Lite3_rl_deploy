@@ -154,6 +154,14 @@ target_link_libraries(rl_deploy
 )
 
 
+# for real
+# target_link_libraries(rl_deploy
+#     ${PROJECT_SOURCE_DIR}/third_party/Lite3_MotionSDK/lib/libdeeprobotics_legged_sdk_aarch64.so
+#     pthread
+#     rt
+# )
+
+
 
 # Raisim
 if (BUILD_SIM)

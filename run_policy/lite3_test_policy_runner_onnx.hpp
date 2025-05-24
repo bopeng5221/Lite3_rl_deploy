@@ -61,7 +61,7 @@ public:
         
         
         // .onnx model需要单独生成
-        model_path_ = GetAbsPath() + "/../policy/model_13000.onnx";
+        model_path_ = GetAbsPath() + "/../policy/5_24/model_7000.onnx";
         obs_total_dim_ = obs_dim_ + obs_his_num_ * obs_dim_;
         
         
@@ -80,14 +80,14 @@ public:
 
 
         dof_pos_default_.setZero(12);
-        dof_pos_default_ << 0.0, -1, 1.8,
-                            -0.0, -1, 1.8,
-                            0.0, -1, 1.8,
-                            -0.0, -1, 1.8;
+        dof_pos_default_ << 0.0, -0.7, 1.5,
+                            -0.0, -0.7, 1.5,
+                            0.0, -0.7, 1.5,
+                            -0.0, -0.7, 1.5;
 
-        kp_ = 30. * VecXf::Ones(12);
-        kd_ = 0.9 * VecXf::Ones(12);
-        max_cmd_vel_ << 0.8, 0.3, 0.6;
+        kp_ = 25. * VecXf::Ones(12);
+        kd_ = 0.7 * VecXf::Ones(12);
+        max_cmd_vel_ << 0.4, 0.4, 0.4;
 
         // Test the model
         for (int i = 0; i < 2; ++i) {
@@ -145,6 +145,12 @@ public:
                         0.1 * last_dof_vel0_,
                         last_action1_,
                         last_action0_;
+
+        if (run_cnt_ == 0) {
+            for(int i = 0; i < obs_his_num_; ++i) {
+                obs_history_.segment(i * obs_dim_, obs_dim_) = current_obs_;
+            }
+        }
 
         VecXf obs_history_record = obs_history_.segment(obs_dim_, (obs_his_num_ - 1) * obs_dim_);
         obs_history_.segment(0, (obs_his_num_ - 1) * obs_dim_) = obs_history_record;

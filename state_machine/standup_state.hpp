@@ -143,7 +143,7 @@ public:
         }else{
             if(uc_ptr_->GetUserCommand().target_mode == int(RobotMotionState::RLControlMode)){
                 return StateName::kRLControl;
-                std::cout << "stand up success" << std::endl;
+                
             }
         }
         return StateName::kStandUp;

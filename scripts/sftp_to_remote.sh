@@ -10,11 +10,12 @@ set username "ysc"
 set passwd "'"
 
 set send_policy "1"
-set policy_name "model_13000.pt"
+# set policy_name "model_13000.pt"
+set policy_name "model_7000.onnx"
 
 if { "$send_policy" == "1" } {
   puts "send policy $policy_name to remote"
-  spawn scp ./policy/$policy_name  $username@$ip:/home/$username/rl_deploy/policy/$policy_name
+  spawn scp ./policy/5_24/$policy_name  $username@$ip:/home/$username/rl_deploy/policy/$policy_name
   expect {
     "密码："
           {

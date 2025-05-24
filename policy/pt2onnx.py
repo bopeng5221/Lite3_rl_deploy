@@ -4,7 +4,7 @@ import onnx
 import onnxruntime as ort
 
 # === Step 1: Load TorchScript model ===
-pt_model_path = "model_13000.pt"
+pt_model_path = "5_19/model_20000.pt"
 print(f" Loading TorchScript model from {pt_model_path}")
 ts_model = torch.jit.load(pt_model_path)
 ts_model.eval()
@@ -18,7 +18,7 @@ print(f" Total ONNX input dimension: {obs_total_dim}")
 dummy_input = torch.ones(1, obs_total_dim)
 
 # === Step 3: Export to ONNX ===
-onnx_model_path = "model_13000.onnx"
+onnx_model_path = "5_19/model_20000.onnx"
 torch.onnx.export(
     ts_model,
     dummy_input,

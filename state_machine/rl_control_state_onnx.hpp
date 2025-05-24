@@ -10,7 +10,7 @@
  */
 
 
-#ifdef USE_ONNX
+
 
 #ifndef RL_CONTROL_STATE_ONNX_HPP_
 #define RL_CONTROL_STATE_ONNX_HPP_
@@ -136,4 +136,3 @@ public:
 
 
 #endif  // RL_CONTROL_STATE_ONNX_HPP_
-#endif  // USE_ONNX
