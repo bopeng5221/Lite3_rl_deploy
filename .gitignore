@@ -10,4 +10,3 @@ third_party/libtorch
 !policy/pt2onnx.py
 !policy/model_13000.onnx
 
-third_party/x30_motion_sdk
