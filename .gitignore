@@ -1,0 +1,13 @@
+build
+*.zip
+.vscode
+
+
+data/*
+policy/*
+third_party/libtorch
+!policy/model_13000.pt
+!policy/pt2onnx.py
+!policy/model_13000.onnx
+
+third_party/x30_motion_sdk
