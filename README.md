@@ -143,7 +143,7 @@ sudo apt-get install expect
 3.ssh [ysc@192.168.1.120](mailto:ysc@192.168.1.120)连进狗的运动主机。修改`~/jy_exe/conf/network.toml`将ip项修改为运动主机的本地ip[127.0.0.1](http://127.0.0.1)，然后重新执行`sudo ~/jy_exe/restart.sh`脚本重启运动程序。 
 
 4.远程连接狗，进入rl_deploy文件夹，执行编译执行流程。 
-
+注意更改state_machine的控制输入接口（keyboard to gamepad）和CMakeList中的Lite3_MotionSDK的架构选择（x86 to aarch64）—— 潜在的bug，Lite3_MotionSDK.so没有被传入狗里面。
 ```shell
 mkdir build 
 cd build 
@@ -249,6 +249,11 @@ make -j4
 ```
 
 
+## 算法切换
 
-
+项目支持HIMLOCO和RMA两种算法，默认使用HIMLOCO
+如果想要使用RMA算法，在编译时
+```bash
+cmake .. -DHIMLOCO=OFF
+```
 
