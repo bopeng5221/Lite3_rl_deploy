@@ -5,7 +5,7 @@
 ## Download and Compile
 
 ```bash
-git clone --recurse-submodules https://github.com/DeepRoboticsLab/Lite3_rl_deploy.git
+git clone --recurse-submodules https://github.com/bopeng5221/Lite3_rl_deploy.git
 mkdir build && cd build
 cmake .. -DBUILD_PLATFORM=x86 -DBUILD_SIM=off -DSEND_REMOTE=OFF 
 make -j4
