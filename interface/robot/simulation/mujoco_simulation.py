@@ -13,7 +13,7 @@ from colorama import init, Fore, Style
 init(autoreset=True)
 
 MODEL_NAME = "lite3"
-XML_PATH = "third_party/URDF_model/Lite3/Lite3_mjcf/mjcf/Lite3.xml"
+XML_PATH = "../../../third_party/URDF_model/Lite3/Lite3_mjcf/mjcf/Lite3.xml"
 LOCAL_PORT = 20001
 CTRL_IP = "127.0.0.1"
 CTRL_PORT = 30010
@@ -37,6 +37,7 @@ class MuJoCoSimulation:
 
         # Load MJCF
         xml_full = str(Path(__file__).resolve().parent / xml_relpath)
+        print("xml_full", xml_full)
         if not os.path.isfile(xml_full):
             raise FileNotFoundError(f"Cannot find MJCF: {xml_full}")
 
