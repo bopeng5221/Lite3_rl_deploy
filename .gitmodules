@@ -5,6 +5,7 @@
 [submodule "third_party/URDF_model"]
 	path = third_party/URDF_model
 	url = https://github.com/DeepRoboticsLab/URDF_model.git
+	branch = main
 [submodule "third_party/eigen"]
 	path = third_party/eigen
 	url = https://gitlab.com/libeigen/eigen.git
