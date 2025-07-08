@@ -124,7 +124,7 @@ public:
         // uc_ptr_ = std::make_shared<RetroidGamepadInterface>(12121);
         if(robot_type == RobotType::Lite3){
             urdf_path = GetAbsPath()+"/../third_party/URDF_model/lite3_urdf/Lite3/urdf/Lite3.urdf";
-            mjcf_path = GetAbsPath()+"/../Lite3_description/lite3_mjcf/mjcf/Lite3.xml";
+            mjcf_path = GetAbsPath()+"third_party/URDF_model/Lite3/Lite3_mjcf/mjcf/Lite3.xml";
             #ifdef USE_RAISIM
                 ri_ptr_ = std::make_shared<JueyingRaisimSimulation>(activation_key, urdf_path, "Lite3_sim");
 
