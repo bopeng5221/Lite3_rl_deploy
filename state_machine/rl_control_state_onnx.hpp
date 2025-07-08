@@ -17,7 +17,13 @@
 
 #include "state_base.h"
 #include "policy_runner_base.hpp"
-#include "lite3_test_policy_runner_onnx.hpp"
+#ifdef HIMLOCO
+    #include "lite3_himloco_policy_runner_onnx.hpp"
+#else
+    #include "lite3_test_policy_runner_onnx.hpp"
+#endif
+
+
 
 class RLControlStateONNX : public StateBase
 {
@@ -26,7 +32,13 @@ private:
     int state_run_cnt_;
 
     std::shared_ptr<PolicyRunnerBase> policy_ptr_;
-    std::shared_ptr<Lite3TestPolicyRunnerONNX> test_policy_;
+    #ifdef HIMLOCO
+        std::shared_ptr<Lite3HLPolicyRunnerONNX> test_policy_;
+    #else
+        std::shared_ptr<Lite3TestPolicyRunnerONNX> test_policy_;
+    #endif
+
+    
     std::thread run_policy_thread_;
     bool start_flag_ = true;
 
@@ -35,6 +47,7 @@ private:
     void UpdateRobotObservation(){
         rbs_.base_rpy     = ri_ptr_->GetImuRpy();
         rbs_.base_rot_mat = RpyToRm(rbs_.base_rpy);
+        rbs_.projected_gravity = RmToProjectedGravity(rbs_.base_rot_mat);
         rbs_.base_omega   = ri_ptr_->GetImuOmega();
         rbs_.base_acc     = ri_ptr_->GetImuAcc();
         rbs_.joint_pos    = ri_ptr_->GetJointPosition();
@@ -81,9 +94,15 @@ private:
 public:
     RLControlStateONNX(const RobotType& robot_type, const std::string& state_name, 
         std::shared_ptr<ControllerData> data_ptr):StateBase(robot_type, state_name, data_ptr){
-            std::memset(&rbs_, 0, sizeof(rbs_));
-
+        std::memset(&rbs_, 0, sizeof(rbs_));
+            
+        #ifdef HIMLOCO
+            test_policy_ = std::make_shared<Lite3HLPolicyRunnerONNX>("test_onnx");
+        #else
             test_policy_ = std::make_shared<Lite3TestPolicyRunnerONNX>("test_onnx");
+        #endif
+            // test_policy_ = std::make_shared<Lite3TestPolicyRunnerONNX>("test_onnx");
+            // test_policy_ = std::make_shared<Lite3HLPolicyRunnerONNX>("test_onnx");
 
             policy_ptr_ = test_policy_;
             if(!policy_ptr_){

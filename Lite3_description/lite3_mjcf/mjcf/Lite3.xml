@@ -39,12 +39,12 @@
   </asset>
 
   <worldbody>
-    <geom name="ground" pos="0 0 0" type="plane" size="50 50 0.1" 
-          rgba="0.8 0.9 0.8 1" friction="0.1 0.01 0.001"/>
+    <!-- <geom name="ground" pos="0 0 0" type="plane" size="50 50 0.1" 
+          rgba="0.8 0.9 0.8 1" friction="0.1 0.01 0.001"/> -->
 
 
 
-    <body name="TORSO" pos="0.00000000 0.00000000 0.43212000" quat="1 0 0 0" childclass="robot">
+    <body name="TORSO" pos="0 0. 1." quat="1 0 0 0" childclass="robot">
       <freejoint name="floating_base" />
       <site name="imu_site" pos="0 0 0" size="0.005" rgba="1 0 0 1"/>
       <inertial pos="0 0 0" mass="5.6056" diaginertia="0.02456 0.05518 0.07016"/>

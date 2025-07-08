@@ -61,7 +61,7 @@ public:
         
         
         // .onnx model需要单独生成
-        model_path_ = GetAbsPath() + "/../policy/5_24/model_7000.onnx";
+        model_path_ = GetAbsPath() + "/../policy/RMA/model_13000.onnx";
         obs_total_dim_ = obs_dim_ + obs_his_num_ * obs_dim_;
         
         
@@ -80,14 +80,13 @@ public:
 
 
         dof_pos_default_.setZero(12);
-        dof_pos_default_ << 0.0, -0.7, 1.5,
-                            -0.0, -0.7, 1.5,
-                            0.0, -0.7, 1.5,
-                            -0.0, -0.7, 1.5;
-
-        kp_ = 25. * VecXf::Ones(12);
-        kd_ = 0.7 * VecXf::Ones(12);
-        max_cmd_vel_ << 0.4, 0.4, 0.4;
+        dof_pos_default_ << 0.0, -1, 1.8,
+                            -0.0, -1, 1.8,
+                            0.0, -1, 1.8,
+                            -0.0, -1, 1.8;
+        kp_ = 20.*VecXf::Ones(12);
+        kd_ = 0.7*VecXf::Ones(12);
+        max_cmd_vel_ << 0.8, 0.8, 0.8;
 
         // Test the model
         for (int i = 0; i < 2; ++i) {

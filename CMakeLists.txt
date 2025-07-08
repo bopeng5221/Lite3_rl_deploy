@@ -8,13 +8,15 @@ add_compile_options(-fPIC)
 
 # ========== 控制选项 ==========
 set(BUILD_PLATFORM "x86" CACHE STRING "select build cpu type")
+option(HIMLOCO ON)
 option(BUILD SIM OFF)
 option(USE_RAISIM OFF)
 set(USE_PYBULLET ON)
 set(USE_RAISIM OFF)
 option(SEND_REMOTE OFF)
-option(USE_ONNX "Use ONNXRuntime" ON)
+# option(USE_ONNX "Use ONNXRuntime" ON)
 option(USE_MJCPP "Use Mujoco C++" OFF)
+
 
 
 if (BUILD_PLATFORM STREQUAL arm)
@@ -35,7 +37,7 @@ endif()
 message("BUILD_PLATFORM: ${BUILD_PLATFORM}")
 message("BUILD_SIM:      ${BUILD_SIM}")
 message("SEND_REMOTE:    ${SEND_REMOTE}")
-message("USE_ONNX:       ${USE_ONNX}")
+# message("USE_ONNX:       ${USE_ONNX}")
 message("USE_MJCPP:      ${USE_MJCPP}")
 
 # 路径设置
@@ -53,12 +55,15 @@ message("Using ONNXRuntime from: ${ONNX_RUNTIME_ROOT}")
 
 
 # ONNX setting
-if (USE_ONNX)
-  add_definitions(-DUSE_ONNX)
+# if (USE_ONNX)
+#   add_definitions(-DUSE_ONNX)
 
-  include_directories(${ONNX_RUNTIME_ROOT}/include)
-  link_directories(${ONNX_RUNTIME_ROOT}/lib)
-endif()
+#   include_directories(${ONNX_RUNTIME_ROOT}/include)
+#   link_directories(${ONNX_RUNTIME_ROOT}/lib)
+# endif()
+include_directories(${ONNX_RUNTIME_ROOT}/include)
+link_directories(${ONNX_RUNTIME_ROOT}/lib)
+
 
 # MuJoCo
 set(MUJOCO_ROOT "${THIRD_PARTY}/mujoco/${BUILD_PLATFORM}")
@@ -69,6 +74,10 @@ if (USE_MJCPP)
   link_directories(${MUJOCO_ROOT}/lib)
 endif()
 
+if (HIMLOCO)
+  message("HIMLOCO enabled, adding HIMLOCO definitions")
+  add_definitions(-DHIMLOCO)
+endif()
 
 
 
@@ -130,11 +139,11 @@ file(GLOB_RECURSE RUN_POLICY_SRC "run_policy/*.cpp")
 add_executable(rl_deploy main.cpp ${STATE_MACHINE_SRC} ${RUN_POLICY_SRC})
 
 # ========== 链接基本库 ==========
-target_link_libraries(rl_deploy interface -lpthread -lm -lrt -ldl -lstdc++)
-if (USE_ONNX)
-  target_link_libraries(rl_deploy onnxruntime)
-  # target_link_libraries(rl_deploy torch)
-endif()
+target_link_libraries(rl_deploy interface -lpthread -lm -lrt -ldl -lstdc++ onnxruntime)
+# if (USE_ONNX)
+#   target_link_libraries(rl_deploy onnxruntime)
+#   # target_link_libraries(rl_deploy torch)
+# endif()
 
 # MuJoCo
 
@@ -145,14 +154,32 @@ if (BUILD_SIM)
   endif()
 endif()
 
-# SDK动态链接库
-link_directories(${THIRD_PARTY}/Lite3_MotionSDK/lib)
-target_link_libraries(rl_deploy
-    ${PROJECT_SOURCE_DIR}/third_party/Lite3_MotionSDK/lib/libdeeprobotics_legged_sdk_x86_64.so
-    pthread
-    rt
-)
+if (BUILD_SIM)
+  link_directories(${THIRD_PARTY}/Lite3_MotionSDK/lib)
+  target_link_libraries(rl_deploy
+      ${PROJECT_SOURCE_DIR}/third_party/Lite3_MotionSDK/lib/libdeeprobotics_legged_sdk_x86_64.so
+      pthread
+      rt
+  )
+else()
+  target_link_libraries(rl_deploy
+      ${PROJECT_SOURCE_DIR}/third_party/Lite3_MotionSDK/lib/libdeeprobotics_legged_sdk_aarch64.so
+      pthread
+      rt
+  )
+endif()
 
+if (BUILD_SIM)
+    target_compile_definitions(rl_deploy PRIVATE BUILD_SIMULATION)
+endif()
+
+# SDK动态链接库
+# link_directories(${THIRD_PARTY}/Lite3_MotionSDK/lib)
+# target_link_libraries(rl_deploy
+#     ${PROJECT_SOURCE_DIR}/third_party/Lite3_MotionSDK/lib/libdeeprobotics_legged_sdk_x86_64.so
+#     pthread
+#     rt
+# )
 
 # for real
 # target_link_libraries(rl_deploy
@@ -160,6 +187,7 @@ target_link_libraries(rl_deploy
 #     pthread
 #     rt
 # )
+
 
 
 

@@ -34,7 +34,11 @@ private:
     void AddSlopeTerrain(){
         double slope_tan = 0.5;
         std::vector<double> height = {0, slope_tan, 2*slope_tan, slope_tan, 0, 
-                                        0, slope_tanjueying_, 10, 4, 0, height);
+                                        0, slope_tan, 2*slope_tan, slope_tan, 0, 
+                                        0, slope_tan, 2*slope_tan, slope_tan, 0, 
+                                        0, slope_tan, 2*slope_tan, slope_tan, 0,
+                                        0, slope_tan, 2*slope_tan, slope_tan, 0};
+        auto heightMap = world_.addHeightMap(5, 5, 10, 10, 4, 0, height);
     }
 
     Vec3f omega_body_, rpy_, acc_;

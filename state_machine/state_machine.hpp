@@ -16,12 +16,13 @@
 #include "standup_state.hpp"
 #include "joint_damping_state.hpp"
 
-#ifdef USE_ONNX
-    #include "rl_control_state_onnx.hpp"
-#else   
-    #include "rl_control_state.hpp"
-#endif
+// #ifdef USE_ONNX
+//     #include "rl_control_state_onnx.hpp"
+// #else   
+//     #include "rl_control_state.hpp"
+// #endif
 
+#include "rl_control_state_onnx.hpp"
 
 #include "skydroid_gamepad_interface.hpp"
 #include "retroid_gamepad_interface.hpp"
@@ -114,10 +115,13 @@ public:
         const std::string activation_key = "~/raisim/activation.raisim";
         std::string urdf_path = "";
         std::string mjcf_path = "";
-        // uc_ptr_ = std::make_shared<SkydroidGamepadInterface>(12121);
+        #ifdef BUILD_SIMULATION
+            uc_ptr_ = std::make_shared<KeyboardInterface>();
+        #else
+            uc_ptr_ = std::make_shared<RetroidGamepadInterface>(12121);
+        #endif
+        // uc_ptr_ = std::make_shared<KeyboardInterface>();
         // uc_ptr_ = std::make_shared<RetroidGamepadInterface>(12121);
-        uc_ptr_ = std::make_shared<KeyboardInterface>();
-
         if(robot_type == RobotType::Lite3){
             urdf_path = GetAbsPath()+"/../third_party/URDF_model/lite3_urdf/Lite3/urdf/Lite3.urdf";
             mjcf_path = GetAbsPath()+"/../Lite3_description/lite3_mjcf/mjcf/Lite3.xml";
@@ -150,11 +154,12 @@ public:
 
         // 测试ONNX，后续需要改成参数控制
         // rl_controller_ = std::make_shared<RLControlState>(robot_type, "rl_control", data_ptr);
-        #ifdef USE_ONNX
-            rl_controller_ = std::make_shared<RLControlStateONNX>(robot_type, "rl_control", data_ptr);
-        #else
-            rl_controller_ = std::make_shared<RLControlState>(robot_type, "rl_control", data_ptr);
-        #endif
+        // #ifdef USE_ONNX
+        //     rl_controller_ = std::make_shared<RLControlStateONNX>(robot_type, "rl_control", data_ptr);
+        // #else
+        //     rl_controller_ = std::make_shared<RLControlState>(robot_type, "rl_control", data_ptr);
+        // #endif
+        rl_controller_ = std::make_shared<RLControlStateONNX>(robot_type, "rl_control", data_ptr);
         
 
 
